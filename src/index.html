@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tab</title>
+    <style>
+        /* Catppuccin Mocha Color Palette */
+        :root {
+            --base: #1e1e2e;
+            --mantle: #181825;
+            --crust: #11111b;
+            --surface0: #313244;
+            --surface1: #45475a;
+            --surface2: #585b70;
+            --overlay0: #6c7086;
+            --overlay1: #7f849c;
+            --overlay2: #9399b2;
+            --subtext0: #a6adc8;
+            --subtext1: #bac2de;
+            --text: #cdd6f4;
+            --lavender: #b4befe;
+            --blue: #89b4fa;
+            --sapphire: #74c7ec;
+            --sky: #89dceb;
+            --teal: #94e2d5;
+            --green: #a6e3a1;
+            --yellow: #f9e2af;
+            --peach: #fab387;
+            --maroon: #eba0ac;
+            --red: #f38ba8;
+            --mauve: #cba6f7;
+            --pink: #f5c2e7;
+            --flamingo: #f2cdcd;
+            --rosewater: #f5e0dc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--base) 0%, var(--mantle) 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+            overflow-x: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .greeting {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--mauve), var(--blue), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .date {
+            font-size: 1.1rem;
+            color: var(--subtext1);
+            opacity: 0.8;
+        }
+
+        .kanban-container {
+            display: flex;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .kanban-column {
+            background: var(--surface0);
+            border-radius: 16px;
+            padding: 1.5rem;
+            min-width: 300px;
+            flex: 1;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--surface1);
+            animation: fadeInUp 0.8s ease-out;
+            transition: transform 0.3s ease;
+        }
+
+        .kanban-column:hover {
+            transform: translateY(-4px);
+        }
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--surface1);
+        }
+
+        .column-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .column-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .quick-links .column-icon {
+            background: linear-gradient(45deg, var(--blue), var(--sapphire));
+        }
+
+        .productivity .column-icon {
+            background: linear-gradient(45deg, var(--green), var(--teal));
+        }
+
+        .social .column-icon {
+            background: linear-gradient(45deg, var(--mauve), var(--pink));
+        }
+
+        .learning .column-icon {
+            background: linear-gradient(45deg, var(--yellow), var(--peach));
+        }
+
+        .link-card {
+            background: var(--surface1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .link-card:hover::before {
+            left: 100%;
+        }
+
+        .link-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--surface2);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .link-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .link-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--base);
+        }
+
+        .chatgpt .link-icon {
+            background: linear-gradient(45deg, var(--green), var(--teal));
+        }
+
+        .claude .link-icon {
+            background: linear-gradient(45deg, var(--peach), var(--yellow));
+        }
+
+        .gmail .link-icon {
+            background: linear-gradient(45deg, var(--red), var(--maroon));
+        }
+
+        .linkedin .link-icon {
+            background: linear-gradient(45deg, var(--blue), var(--sapphire));
+        }
+
+        .monkeytype .link-icon {
+            background: linear-gradient(45deg, var(--mauve), var(--lavender));
+        }
+
+        .github .link-icon {
+            background: linear-gradient(45deg, var(--overlay2), var(--subtext0));
+        }
+
+        .notion .link-icon {
+            background: linear-gradient(45deg, var(--surface2), var(--overlay1));
+        }
+
+        .gdrive .link-icon {
+            background: linear-gradient(45deg, var(--blue), var(--sapphire));
+        }
+
+        .freecodecamp .link-icon {
+            background: linear-gradient(45deg, var(--green), var(--yellow));
+        }
+
+        .roadmap .link-icon {
+            background: linear-gradient(45deg, var(--teal), var(--sky));
+        }
+
+        .geeksforgeeks .link-icon {
+            background: linear-gradient(45deg, var(--green), var(--teal));
+        }
+
+        .stackoverflow .link-icon {
+            background: linear-gradient(45deg, var(--peach), var(--yellow));
+        }
+
+        .leetcode .link-icon {
+            background: linear-gradient(45deg, var(--red), var(--peach));
+        }
+
+        .link-info {
+            flex: 1;
+        }
+
+        .link-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text);
+        }
+
+        .link-description {
+            font-size: 0.85rem;
+            color: var(--subtext1);
+            opacity: 0.8;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .kanban-column:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .kanban-column:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .kanban-column:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .kanban-column:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .kanban-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .kanban-column {
+                min-width: unset;
+            }
+
+            .greeting {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="greeting" id="greeting">Good Morning</div>
+        <div class="date" id="date"></div>
+    </div>
+
+    <div class="kanban-container">
+        <div class="kanban-column">
+            <div class="column-header">
+                <div class="column-icon quick-links">🚀</div>
+                <div class="column-title">AI Tools</div>
+            </div>
+
+            <a href="https://chatgpt.com" class="link-card chatgpt">
+                <div class="link-content">
+                    <div class="link-icon">🤖</div>
+                    <div class="link-info">
+                        <div class="link-title">ChatGPT</div>
+                        <div class="link-description">OpenAI's conversational AI</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://claude.ai" class="link-card claude">
+                <div class="link-content">
+                    <div class="link-icon">🧠</div>
+                    <div class="link-info">
+                        <div class="link-title">Claude</div>
+                        <div class="link-description">Anthropic's AI assistant</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="kanban-column">
+            <div class="column-header">
+                <div class="column-icon productivity">⚡</div>
+                <div class="column-title">Productivity</div>
+            </div>
+
+            <a href="https://gmail.com" class="link-card gmail">
+                <div class="link-content">
+                    <div class="link-icon">📧</div>
+                    <div class="link-info">
+                        <div class="link-title">Gmail</div>
+                        <div class="link-description">Email and communication</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://monkeytype.com" class="link-card monkeytype">
+                <div class="link-content">
+                    <div class="link-icon">⌨️</div>
+                    <div class="link-info">
+                        <div class="link-title">MonkeyType</div>
+                        <div class="link-description">Typing speed practice</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="kanban-column">
+            <div class="column-header">
+                <div class="column-icon social">🌐</div>
+                <div class="column-title">Professional</div>
+            </div>
+
+            <a href="https://linkedin.com" class="link-card linkedin">
+                <div class="link-content">
+                    <div class="link-icon">💼</div>
+                    <div class="link-info">
+                        <div class="link-title">LinkedIn</div>
+                        <div class="link-description">Professional networking</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://github.com" class="link-card github">
+                <div class="link-content">
+                    <div class="link-icon">🐙</div>
+                    <div class="link-info">
+                        <div class="link-title">GitHub</div>
+                        <div class="link-description">Code repositories & collaboration</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://notion.so" class="link-card notion">
+                <div class="link-content">
+                    <div class="link-icon">📝</div>
+                    <div class="link-info">
+                        <div class="link-title">Notion</div>
+                        <div class="link-description">Notes & project management</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://drive.google.com" class="link-card gdrive">
+                <div class="link-content">
+                    <div class="link-icon">☁️</div>
+                    <div class="link-info">
+                        <div class="link-title">Google Drive</div>
+                        <div class="link-description">Cloud storage & docs</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="kanban-column">
+            <div class="column-header">
+                <div class="column-icon learning">📚</div>
+                <div class="column-title">Learning</div>
+            </div>
+
+            <a href="https://freecodecamp.org" class="link-card freecodecamp">
+                <div class="link-content">
+                    <div class="link-icon">🔥</div>
+                    <div class="link-info">
+                        <div class="link-title">FreeCodeCamp</div>
+                        <div class="link-description">Interactive coding tutorials</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://roadmap.sh" class="link-card roadmap">
+                <div class="link-content">
+                    <div class="link-icon">🗺️</div>
+                    <div class="link-info">
+                        <div class="link-title">Roadmap.sh</div>
+                        <div class="link-description">Developer learning paths</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://geeksforgeeks.org" class="link-card geeksforgeeks">
+                <div class="link-content">
+                    <div class="link-icon">🤓</div>
+                    <div class="link-info">
+                        <div class="link-title">GeeksforGeeks</div>
+                        <div class="link-description">Algorithms & data structures</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://stackoverflow.com" class="link-card stackoverflow">
+                <div class="link-content">
+                    <div class="link-icon">💡</div>
+                    <div class="link-info">
+                        <div class="link-title">Stack Overflow</div>
+                        <div class="link-description">Developer Q&A community</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://leetcode.com" class="link-card leetcode">
+                <div class="link-content">
+                    <div class="link-icon">🧩</div>
+                    <div class="link-info">
+                        <div class="link-title">LeetCode</div>
+                        <div class="link-description">Coding challenges & prep</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function updateGreeting() {
+            const now = new Date();
+            const hour = now.getHours();
+            const greetingElement = document.getElementById('greeting');
+
+            let greeting;
+            if (hour < 12) {
+                greeting = 'Good Morning';
+            } else if (hour < 17) {
+                greeting = 'Good Afternoon';
+            } else {
+                greeting = 'Good Evening';
+            }
+
+            greetingElement.textContent = greeting;
+        }
+
+        function updateDate() {
+            const now = new Date();
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            const dateString = now.toLocaleDateString('en-US', options);
+            document.getElementById('date').textContent = dateString;
+        }
+
+        // Initialize
+        updateGreeting();
+        updateDate();
+
+        // Update every minute
+        setInterval(updateGreeting, 60000);
+        setInterval(updateDate, 60000);
+
+        // Add smooth scrolling for horizontal overflow
+        const container = document.querySelector('.kanban-container');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        container.addEventListener('mousedown', (e) => {
+            isDown = true;
+            container.style.cursor = 'grabbing';
+            startX = e.pageX - container.offsetLeft;
+            scrollLeft = container.scrollLeft;
+        });
+
+        container.addEventListener('mouseleave', () => {
+            isDown = false;
+            container.style.cursor = 'grab';
+        });
+
+        container.addEventListener('mouseup', () => {
+            isDown = false;
+            container.style.cursor = 'grab';
+        });
+
+        container.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - container.offsetLeft;
+            const walk = (x - startX) * 2;
+            container.scrollLeft = scrollLeft - walk;
+        });
+    </script>
+</body>
+</html>
